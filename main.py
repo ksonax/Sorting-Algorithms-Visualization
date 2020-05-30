@@ -1,4 +1,4 @@
-import pygame,random
+import pygame,random,pygame_gui
 pygame.init()
 RGB_WHITE: tuple = (255, 255, 255)
 RGB_BLACK: tuple = (0, 0, 0)
@@ -18,18 +18,32 @@ MAX_VALUE = SCREEN_HEIGHT
 START_POINT_Y = SCREEN_HEIGHT
 LINE_WIDTH = (SCREEN_WIDTH - ARRAY_SIZE - 1) // (ARRAY_SIZE - 1)
 SPACING = SCREEN_WIDTH / ARRAY_SIZE
-DELAY_TIME = 5
-RUN = True
-
+DELAY_TIME = 10
+GUI_BOX_SIZE = (150,50)
+GUI_BOX_STARTING_POSTION_X= 0
+GUI_BOX_STARTING_POSTION_Y = 0
+GUI_BOX_GAP = 150
 pygame.display.set_caption("SORTING METHODS VISUALISER")
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+#GUI
+manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pygame.time.Clock()
+insertion_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Insertion',manager=manager)
+select_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X + GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Select',manager=manager)
+shell_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X + 2*GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Shell',manager=manager)
+merge_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X + 3*GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Merge',manager=manager)
+quick_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X+4*GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Quick',manager=manager)
+heap_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X+5*GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Heap',manager=manager)
+randomize_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X+6*GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)),text='Randomize',manager=manager)
+escape_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((GUI_BOX_STARTING_POSTION_X + 7 * GUI_BOX_GAP, GUI_BOX_STARTING_POSTION_Y), (GUI_BOX_SIZE)), text='ESCAPE', manager=manager)
 def generate_list_array():
     MAIN_ARRAY = list(range(ARRAY_SIZE))
     random.shuffle(MAIN_ARRAY)
 def generate_random_array():
     for i in range(1, ARRAY_SIZE):
         COLOR_ARRAY[i]= RGB_GREEN
-        MAIN_ARRAY[i]= random.randrange(1, SCREEN_HEIGHT)
+        MAIN_ARRAY[i]= random.randrange(1, (SCREEN_HEIGHT - GUI_BOX_SIZE[1]))
 generate_random_array()
 def insertion_sort(arr):
     arr_size = len(arr)
@@ -49,10 +63,13 @@ def selection_sort(arr):
     arr_size=len(arr)
     for i in range(arr_size):
         min_index = i
+        COLOR_ARRAY[min_index] = RGB_RED
         for j in range(i+1,arr_size):
             if arr[min_index] > arr[j]:
                 min_index = j
+                COLOR_ARRAY[min_index] = RGB_YELLOW
         arr[i],arr[min_index] = arr[min_index],arr[i]
+        COLOR_ARRAY[i  ] = RGB_PINK
         update_window()
 def shell_sort(arr): #dziala za szybko ->
     arr_size = len(arr)
@@ -61,13 +78,14 @@ def shell_sort(arr): #dziala za szybko ->
         for i in range (gap,arr_size):
             temp_variable = arr[i]
             j=i
+            COLOR_ARRAY[j] = RGB_YELLOW
             while j >= gap and arr[j-gap] > temp_variable:
                 arr[j] = arr[j-gap]
                 update_window()
                 j -= gap
             arr[j] = temp_variable
+            COLOR_ARRAY[j] = RGB_PINK
         gap //= 2
-    #array_window_update(arr)
 def merge_sort(arr):
     arr_size = len(arr)
     if arr_size > 1:
@@ -77,7 +95,6 @@ def merge_sort(arr):
         merge_sort(L)
         merge_sort(R)
         i = j = k = 0
-        #pygame.event.pump()
         while i < len(L) and j < len(R):
             if L[i] < R[j]:
                 arr[k] = L[i]
@@ -112,7 +129,6 @@ def quick_sort(arr, min, max):
         return (i + 1)
     if min < max:
         partition = quick_sort_partition(arr, min, max)
-        #array_window_update(arr)
         quick_sort(arr, min, partition - 1)
         quick_sort(arr, partition + 1, max)
 def heap_sort(arr):
@@ -141,26 +157,51 @@ def update_window():
     screen.fill(RGB_BLACK)
     draw_in_window()
     pygame.display.flip()
-    pygame.time.delay(DELAY_TIME) #zmienic zmienna z dupy
-#main
-while RUN:
-    screen.fill(RGB_BLACK)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            RUN = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                insertion_sort(MAIN_ARRAY)#DZIALA
-                #selection_sort(MAIN_ARRAY)
-                #shell_sort(MAIN_ARRAY)
-                #merge_sort(MAIN_ARRAY)
-                #quick_sort(MAIN_ARRAY, 0, ARRAY_SIZE - 1)
-                #heap_sort(MAIN_ARRAY) #rysowanie nie dziala poprawnie
-    draw_in_window()
-    pygame.display.update()
-pygame.quit()
-
-
-
-
-
+    pygame.time.delay(DELAY_TIME)
+def main():
+    RUN = True
+    while RUN:
+        time_delta = clock.tick(60) / 1000.0
+        screen.fill(RGB_BLACK)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                RUN = False
+            manager.process_events(event)
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == insertion_button:
+                        insertion_sort(MAIN_ARRAY)
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == select_button:
+                        selection_sort(MAIN_ARRAY)
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == shell_button:
+                        shell_sort(MAIN_ARRAY) #no color
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == merge_button:
+                        merge_sort(MAIN_ARRAY)
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == quick_button:
+                        quick_sort(MAIN_ARRAY, 0, ARRAY_SIZE - 1) #no color too fast
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == heap_button:
+                        heap_sort(MAIN_ARRAY) #rysowanie nie dziala poprawnie
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == randomize_button:
+                        generate_random_array()
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == escape_button:
+                        RUN = False
+        manager.update(time_delta)
+        manager.draw_ui(screen)
+        draw_in_window()
+        pygame.display.update()
+    pygame.quit()
+main()

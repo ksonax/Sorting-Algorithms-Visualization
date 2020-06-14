@@ -33,11 +33,6 @@ GUI_BOX_GAP = 150
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
-def generate_list_array():
-    main_array = list(range(ARRAY_SIZE))
-    random.shuffle(main_array)
-
-
 def generate_random_array():
     """Generuje tablicę z pseudolosowymi wartościami."""
     for i in range(1, ARRAY_SIZE):

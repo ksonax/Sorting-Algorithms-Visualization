@@ -1,10 +1,11 @@
-import pygame
+"""SORTING METHODS VISUALISER IN PYTHON"""
 import random
+import pygame
 import pygame_gui
 
 
 class Colors:
-    """Paleta barw używana do kolorowania elementów tablic."""
+    """Colors used for visualising changes in arrays."""
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     GREEN = (0, 255, 0)
@@ -13,9 +14,19 @@ class Colors:
     PINK = (255, 0, 255)
 
 
+class TimeDelay:
+    """Stores values of delays for each sorting function"""
+    INSERTION_SORT_DELAY = 1
+    SELECTION_SORT_DELAY = 0
+    SHELL_SORT_DELAY = 20
+    MERGE_SORT_DELAY = 10
+    QUICK_SORT_DELAY = 20
+    HEAP_SORT_DELAY = 5
+
+
 ARRAY_SIZE = 100
 MAIN_ARRAY = [0] * ARRAY_SIZE
-COLOR_ARRAY = [Colors.PINK] * ARRAY_SIZE
+COLOR_ARRAY = [Colors.WHITE] * ARRAY_SIZE
 
 START_POINT_X = 1
 SCREEN_WIDTH = 1200
@@ -24,7 +35,10 @@ MAX_VALUE = SCREEN_HEIGHT
 START_POINT_Y = SCREEN_HEIGHT
 LINE_WIDTH = (SCREEN_WIDTH - ARRAY_SIZE - 1) // (ARRAY_SIZE - 1)
 SPACING = SCREEN_WIDTH / ARRAY_SIZE
-DELAY_TIME = 5
+NUMBER_OF_BUTTONS = 8
+BUTTONS_NAMES = ['InsertionSort', 'SelectSort', 'ShellSort', 'MergeSort',
+                 'QuickSort', 'HeapSort', 'Randomize', 'ESC']
+BUTTONS_ARRAY = [0] * NUMBER_OF_BUTTONS
 
 GUI_BOX_SIZE = (150, 50)
 GUI_BOX_STARTING_POSITION_X = 0
@@ -34,14 +48,14 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 def generate_random_array():
-    """Generuje tablicę z pseudolosowymi wartościami."""
+    """Generates randomized array."""
     for i in range(1, ARRAY_SIZE):
         COLOR_ARRAY[i] = Colors.GREEN
         MAIN_ARRAY[i] = random.randrange(1, (SCREEN_HEIGHT - GUI_BOX_SIZE[1]))
 
 
 def insertion_sort(array):
-    """Funkcja sortująca tablice za pomocą metody insertion sort."""
+    """Sorts array using insertion sort method."""
     array_size = len(array)
     for i in range(1, array_size):
         COLOR_ARRAY[i] = Colors.RED
@@ -50,7 +64,7 @@ def insertion_sort(array):
         while j >= 0 and key < array[j]:
             COLOR_ARRAY[j] = Colors.YELLOW
             array[j + 1] = array[j]
-            update_window()
+            update_window(TimeDelay.INSERTION_SORT_DELAY)
             COLOR_ARRAY[j] = Colors.PINK
             j -= 1
         array[j + 1] = key
@@ -58,14 +72,14 @@ def insertion_sort(array):
 
 
 def selection_sort(array):
-    """Funkcja sortująca tablice za pomocą metody selection sort."""
+    """Sorts array using selection sort method."""
     array_size = len(array)
     for i in range(array_size):
         min_index = i
         COLOR_ARRAY[i] = Colors.RED
-        for j in range(i+1,array_size):
+        for j in range(i+1, array_size):
             COLOR_ARRAY[j] = Colors.YELLOW
-            update_window()
+            update_window(TimeDelay.SELECTION_SORT_DELAY)
             if array[min_index] > array[j]:
                 min_index = j
                 COLOR_ARRAY[min_index] = Colors.RED
@@ -76,7 +90,7 @@ def selection_sort(array):
 
 
 def shell_sort(array):
-    """Funkcja sortująca tablice za pomocą metody shell sort."""
+    """Sorts array using shell sort method."""
     array_size = len(array)
     gap = [57, 23, 10, 4, 1]
     for index in range(0, len(gap)):
@@ -87,7 +101,7 @@ def shell_sort(array):
                 array[j] = array[j - gap[index]]
                 COLOR_ARRAY[j] = Colors.RED
                 COLOR_ARRAY[i] = Colors.RED
-                update_window()
+                update_window(TimeDelay.SHELL_SORT_DELAY)
                 COLOR_ARRAY[j] = Colors.GREEN
                 COLOR_ARRAY[i] = Colors.GREEN
                 j -= gap[index]
@@ -95,9 +109,9 @@ def shell_sort(array):
 
 
 def merge_sort(array, left, right):
-    """Funkcja sortująca tablice za pomocą metody merge sort."""
+    """Sorts array using  merge sort method."""
     def merge(array, left, mid_left, mid_right, right):
-        """Funkcja używana w metodzie merge sort."""
+        """Sorts given part of array."""
         i = left
         j = mid_right
         temp_variable = []
@@ -105,7 +119,7 @@ def merge_sort(array, left, right):
         while i <= mid_left and j <= right:
             COLOR_ARRAY[i] = Colors.RED
             COLOR_ARRAY[j] = Colors.RED
-            update_window()
+            update_window(TimeDelay.MERGE_SORT_DELAY)
             COLOR_ARRAY[i] = Colors.YELLOW
             COLOR_ARRAY[j] = Colors.YELLOW
             if array[i] < array[j]:
@@ -116,13 +130,13 @@ def merge_sort(array, left, right):
                 j += 1
         while i <= mid_left:
             COLOR_ARRAY[i] = Colors.RED
-            update_window()
+            update_window(TimeDelay.MERGE_SORT_DELAY)
             COLOR_ARRAY[i] = Colors.YELLOW
             temp_variable.append(array[i])
             i += 1
         while j <= right:
             COLOR_ARRAY[j] = Colors.RED
-            update_window()
+            update_window(TimeDelay.MERGE_SORT_DELAY)
             COLOR_ARRAY[j] = Colors.YELLOW
             temp_variable.append(array[j])
             j += 1
@@ -132,7 +146,7 @@ def merge_sort(array, left, right):
             array[i] = temp_variable[j]
             j += 1
             COLOR_ARRAY[i] = Colors.PINK
-            update_window()
+            update_window(TimeDelay.MERGE_SORT_DELAY)
             if right - left == len(array) - 2:
                 COLOR_ARRAY[i] = Colors.GREEN
             else:
@@ -146,15 +160,15 @@ def merge_sort(array, left, right):
 
 
 def quick_sort(array, min, max):
-    """Funkcja sortująca tablice za pomocą metody merge sort."""
+    """Sorts array using quick sort method."""
     def quick_sort_partition(arr, min, max):
-        """Funkcja partition metody quick sort"""
+        """Makes partition for quick sort."""
         i = (min - 1)
         pivot = arr[max]
         COLOR_ARRAY[max] = Colors.RED
         for j in range(min, max):
             COLOR_ARRAY[j] = Colors.WHITE
-            update_window()
+            update_window(TimeDelay.QUICK_SORT_DELAY)
             if arr[j] < pivot:
                 i = i + 1
                 arr[i], arr[j] = arr[j], arr[i]
@@ -173,27 +187,27 @@ def quick_sort(array, min, max):
 
 
 def heap_sort(array):
-    """Funkcja sortująca tablice za pomocą metody heap sort."""
+    """Sorts array using heap sort method."""
     def heapify(array, array_size, i):
-        """Funkcja tworząca heap dla metody heap sort."""
+        """Makes heap for heap sort."""
         largest = i
         left = 2 * i + 1
         right = 2 * i + 2
-        update_window()
+        update_window(TimeDelay.HEAP_SORT_DELAY)
         if left < array_size and array[i] < array[left]:
             COLOR_ARRAY[largest] = Colors.YELLOW
             largest = left
-            update_window()
+            update_window(TimeDelay.HEAP_SORT_DELAY)
             COLOR_ARRAY[largest] = Colors.RED
         if right < array_size and array[largest] < array[right]:
             COLOR_ARRAY[largest] = Colors.YELLOW
             largest = right
-            update_window()
+            update_window(TimeDelay.HEAP_SORT_DELAY)
             COLOR_ARRAY[largest] = Colors.RED
         if largest != i:
             COLOR_ARRAY[i] = Colors.YELLOW
             array[i], array[largest] = array[largest], array[i]
-            update_window()
+            update_window(TimeDelay.HEAP_SORT_DELAY)
             COLOR_ARRAY[largest] = Colors.YELLOW
             heapify(array, array_size, largest)
     array_size = len(array)
@@ -202,56 +216,38 @@ def heap_sort(array):
     for i in range(array_size - 1, 0, -1):
         array[i], array[0] = array[0], array[i]
         COLOR_ARRAY[i] = Colors.GREEN
-        update_window()
+        update_window(TimeDelay.HEAP_SORT_DELAY)
         heapify(array, i, 0)
 
 
 def draw_in_window():
-    """Funkcja rysująca lini w głównym oknie programu"""
+    """Draws lines corresponding to array values."""
     for i in range(1, ARRAY_SIZE):
         pygame.draw.line(SCREEN, COLOR_ARRAY[i], (i * SPACING, SCREEN_HEIGHT),
-                         (i * SPACING, SCREEN_HEIGHT - MAIN_ARRAY[i]), LINE_WIDTH)
+                         (i * SPACING, SCREEN_HEIGHT - MAIN_ARRAY[i]),
+                         LINE_WIDTH)
 
 
-def update_window():
-    """Funkcja aktualizująca główne okno programu"""
+def update_window(time_delay):
+    """Updates main window depending on given delay time."""
     SCREEN.fill(Colors.BLACK)
     draw_in_window()
     pygame.display.flip()
-    pygame.time.delay(DELAY_TIME)
+    pygame.time.delay(time_delay)
 
 
 def main():
-    """Główna funkcja programu"""
+    """Main function."""
     pygame.init()
     pygame.display.set_caption("SORTING METHODS VISUALISER")
-    # GUI
     manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    insertion_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X, GUI_BOX_STARTING_POSITION_Y), (GUI_BOX_SIZE)),
-        text='InsertionSort', manager=manager)
-    select_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='SelectSort', manager=manager)
-    shell_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + 2 * GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='ShellSort', manager=manager)
-    merge_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + 3 * GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='MergeSort', manager=manager)
-    quick_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + 4 * GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='QuickSort', manager=manager)
-    heap_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + 5 * GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='HeapSort', manager=manager)
-    randomize_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + 6 * GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='Randomize', manager=manager)
-    escape_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((GUI_BOX_STARTING_POSITION_X + 7 * GUI_BOX_GAP, GUI_BOX_STARTING_POSITION_Y),
-                                  GUI_BOX_SIZE), text='ESCAPE', manager=manager)
+    for i in range(0, NUMBER_OF_BUTTONS):
+        BUTTONS_ARRAY[i] = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                (GUI_BOX_STARTING_POSITION_X + (i * GUI_BOX_GAP),
+                 GUI_BOX_STARTING_POSITION_Y),
+                GUI_BOX_SIZE), text=BUTTONS_NAMES[i], manager=manager)
 
     generate_random_array()
 
@@ -266,21 +262,21 @@ def main():
             manager.process_events(event)
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                    if event.ui_element == insertion_button:
+                    if event.ui_element == BUTTONS_ARRAY[0]:
                         insertion_sort(MAIN_ARRAY)
-                    if event.ui_element == select_button:
+                    if event.ui_element == BUTTONS_ARRAY[1]:
                         selection_sort(MAIN_ARRAY)
-                    if event.ui_element == shell_button:
+                    if event.ui_element == BUTTONS_ARRAY[2]:
                         shell_sort(MAIN_ARRAY)
-                    if event.ui_element == merge_button:
+                    if event.ui_element == BUTTONS_ARRAY[3]:
                         merge_sort(MAIN_ARRAY, 1, len(MAIN_ARRAY) - 1)
-                    if event.ui_element == quick_button:
+                    if event.ui_element == BUTTONS_ARRAY[4]:
                         quick_sort(MAIN_ARRAY, 0, ARRAY_SIZE - 1)
-                    if event.ui_element == heap_button:
+                    if event.ui_element == BUTTONS_ARRAY[5]:
                         heap_sort(MAIN_ARRAY)
-                    if event.ui_element == randomize_button:
+                    if event.ui_element == BUTTONS_ARRAY[6]:
                         generate_random_array()
-                    if event.ui_element == escape_button:
+                    if event.ui_element == BUTTONS_ARRAY[7]:
                         window_opened = False
         manager.update(time_delta)
         manager.draw_ui(SCREEN)

@@ -6,12 +6,11 @@ import pygame_gui
 
 class Colors:
     """Colors used for visualising changes in arrays."""
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-    YELLOW = (255, 255, 0)
-    PINK = (255, 0, 255)
+    BACKGROUND = (0, 0, 0)
+    DEFAULT_ARRAY_COLOR = (0, 255, 0)
+    HIGHLIGHT_ARRAY_ELEMENT_RED = (255, 0, 0)
+    HIGHLIGHT_ARRAY_ELEMENT_YELLOW = (255, 255, 0)
+    HIGHLIGHT_ARRAY_ELEMENT_PINK = (255, 0, 255)
 
 
 class TimeDelay:
@@ -26,7 +25,7 @@ class TimeDelay:
 
 ARRAY_SIZE = 100
 MAIN_ARRAY = [0] * ARRAY_SIZE
-COLOR_ARRAY = [Colors.WHITE] * ARRAY_SIZE
+COLOR_ARRAY = [Colors.DEFAULT_ARRAY_COLOR] * ARRAY_SIZE
 
 START_POINT_X = 1
 SCREEN_WIDTH = 1200
@@ -50,7 +49,7 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 def generate_random_array():
     """Generates randomized array."""
     for i in range(1, ARRAY_SIZE):
-        COLOR_ARRAY[i] = Colors.GREEN
+        COLOR_ARRAY[i] = Colors.DEFAULT_ARRAY_COLOR
         MAIN_ARRAY[i] = random.randrange(1, (SCREEN_HEIGHT - GUI_BOX_SIZE[1]))
 
 
@@ -58,17 +57,17 @@ def insertion_sort(array):
     """Sorts array using insertion sort method."""
     array_size = len(array)
     for i in range(1, array_size):
-        COLOR_ARRAY[i] = Colors.RED
+        COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
         key = array[i]
         j = i - 1
         while j >= 0 and key < array[j]:
-            COLOR_ARRAY[j] = Colors.YELLOW
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             array[j + 1] = array[j]
             update_window(TimeDelay.INSERTION_SORT_DELAY)
-            COLOR_ARRAY[j] = Colors.PINK
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_PINK
             j -= 1
         array[j + 1] = key
-        COLOR_ARRAY[i] = Colors.PINK
+        COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_PINK
 
 
 def selection_sort(array):
@@ -76,17 +75,17 @@ def selection_sort(array):
     array_size = len(array)
     for i in range(array_size):
         min_index = i
-        COLOR_ARRAY[i] = Colors.RED
+        COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
         for j in range(i+1, array_size):
-            COLOR_ARRAY[j] = Colors.YELLOW
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             update_window(TimeDelay.SELECTION_SORT_DELAY)
             if array[min_index] > array[j]:
                 min_index = j
-                COLOR_ARRAY[min_index] = Colors.RED
+                COLOR_ARRAY[min_index] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
             else:
-                COLOR_ARRAY[j] = Colors.GREEN
+                COLOR_ARRAY[j] = Colors.DEFAULT_ARRAY_COLOR
         array[i], array[min_index] = array[min_index], array[i]
-        COLOR_ARRAY[i] = Colors.PINK
+        COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_PINK
 
 
 def shell_sort(array):
@@ -99,11 +98,11 @@ def shell_sort(array):
             j = i
             while j >= gap[index] and array[j - gap[index]] > temp_variable:
                 array[j] = array[j - gap[index]]
-                COLOR_ARRAY[j] = Colors.RED
-                COLOR_ARRAY[i] = Colors.RED
+                COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
+                COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
                 update_window(TimeDelay.SHELL_SORT_DELAY)
-                COLOR_ARRAY[j] = Colors.GREEN
-                COLOR_ARRAY[i] = Colors.GREEN
+                COLOR_ARRAY[j] = Colors.DEFAULT_ARRAY_COLOR
+                COLOR_ARRAY[i] = Colors.DEFAULT_ARRAY_COLOR
                 j -= gap[index]
             array[j] = temp_variable
 
@@ -117,11 +116,11 @@ def merge_sort(array, left, right):
         temp_variable = []
         pygame.event.pump()
         while i <= mid_left and j <= right:
-            COLOR_ARRAY[i] = Colors.RED
-            COLOR_ARRAY[j] = Colors.RED
+            COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
             update_window(TimeDelay.MERGE_SORT_DELAY)
-            COLOR_ARRAY[i] = Colors.YELLOW
-            COLOR_ARRAY[j] = Colors.YELLOW
+            COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             if array[i] < array[j]:
                 temp_variable.append(array[i])
                 i += 1
@@ -129,15 +128,15 @@ def merge_sort(array, left, right):
                 temp_variable.append(array[j])
                 j += 1
         while i <= mid_left:
-            COLOR_ARRAY[i] = Colors.RED
+            COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
             update_window(TimeDelay.MERGE_SORT_DELAY)
-            COLOR_ARRAY[i] = Colors.YELLOW
+            COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             temp_variable.append(array[i])
             i += 1
         while j <= right:
-            COLOR_ARRAY[j] = Colors.RED
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
             update_window(TimeDelay.MERGE_SORT_DELAY)
-            COLOR_ARRAY[j] = Colors.YELLOW
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             temp_variable.append(array[j])
             j += 1
         j = 0
@@ -145,12 +144,12 @@ def merge_sort(array, left, right):
             pygame.event.pump()
             array[i] = temp_variable[j]
             j += 1
-            COLOR_ARRAY[i] = Colors.PINK
+            COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_PINK
             update_window(TimeDelay.MERGE_SORT_DELAY)
             if right - left == len(array) - 2:
-                COLOR_ARRAY[i] = Colors.GREEN
+                COLOR_ARRAY[i] = Colors.DEFAULT_ARRAY_COLOR
             else:
-                COLOR_ARRAY[i] = Colors.YELLOW
+                COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
     mid = (left + right) // 2
     if left < right:
         merge_sort(array, left, mid)
@@ -165,20 +164,20 @@ def quick_sort(array, min, max):
         """Makes partition for quick sort."""
         i = (min - 1)
         pivot = arr[max]
-        COLOR_ARRAY[max] = Colors.RED
+        COLOR_ARRAY[max] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
         for j in range(min, max):
-            COLOR_ARRAY[j] = Colors.WHITE
+            COLOR_ARRAY[j] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             update_window(TimeDelay.QUICK_SORT_DELAY)
             if arr[j] < pivot:
                 i = i + 1
                 arr[i], arr[j] = arr[j], arr[i]
-                COLOR_ARRAY[i] = Colors.GREEN
+                COLOR_ARRAY[i] = Colors.DEFAULT_ARRAY_COLOR
             else:
-                COLOR_ARRAY[j] = Colors.GREEN
-                COLOR_ARRAY[i] = Colors.GREEN
-            COLOR_ARRAY[j] = Colors.GREEN
+                COLOR_ARRAY[j] = Colors.DEFAULT_ARRAY_COLOR
+                COLOR_ARRAY[i] = Colors.DEFAULT_ARRAY_COLOR
+            COLOR_ARRAY[j] = Colors.DEFAULT_ARRAY_COLOR
         arr[i + 1], arr[max] = arr[max], arr[i + 1]
-        COLOR_ARRAY[max] = Colors.GREEN
+        COLOR_ARRAY[max] = Colors.DEFAULT_ARRAY_COLOR
         return i + 1
     if min < max:
         partition = quick_sort_partition(array, min, max)
@@ -195,27 +194,27 @@ def heap_sort(array):
         right = 2 * i + 2
         update_window(TimeDelay.HEAP_SORT_DELAY)
         if left < array_size and array[i] < array[left]:
-            COLOR_ARRAY[largest] = Colors.YELLOW
+            COLOR_ARRAY[largest] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             largest = left
             update_window(TimeDelay.HEAP_SORT_DELAY)
-            COLOR_ARRAY[largest] = Colors.RED
+            COLOR_ARRAY[largest] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
         if right < array_size and array[largest] < array[right]:
-            COLOR_ARRAY[largest] = Colors.YELLOW
+            COLOR_ARRAY[largest] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             largest = right
             update_window(TimeDelay.HEAP_SORT_DELAY)
-            COLOR_ARRAY[largest] = Colors.RED
+            COLOR_ARRAY[largest] = Colors.HIGHLIGHT_ARRAY_ELEMENT_RED
         if largest != i:
-            COLOR_ARRAY[i] = Colors.YELLOW
+            COLOR_ARRAY[i] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             array[i], array[largest] = array[largest], array[i]
             update_window(TimeDelay.HEAP_SORT_DELAY)
-            COLOR_ARRAY[largest] = Colors.YELLOW
+            COLOR_ARRAY[largest] = Colors.HIGHLIGHT_ARRAY_ELEMENT_YELLOW
             heapify(array, array_size, largest)
     array_size = len(array)
     for i in range((array_size // 2), - 1, -1):
         heapify(array, array_size, i)
     for i in range(array_size - 1, 0, -1):
         array[i], array[0] = array[0], array[i]
-        COLOR_ARRAY[i] = Colors.GREEN
+        COLOR_ARRAY[i] = Colors.DEFAULT_ARRAY_COLOR
         update_window(TimeDelay.HEAP_SORT_DELAY)
         heapify(array, i, 0)
 
@@ -230,7 +229,7 @@ def draw_in_window():
 
 def update_window(time_delay):
     """Updates main window depending on given delay time."""
-    SCREEN.fill(Colors.BLACK)
+    SCREEN.fill(Colors.BACKGROUND)
     draw_in_window()
     pygame.display.flip()
     pygame.time.delay(time_delay)
@@ -255,7 +254,7 @@ def main():
 
     while window_opened:
         time_delta = clock.tick(60) / 1000.0
-        SCREEN.fill(Colors.BLACK)
+        SCREEN.fill(Colors.BACKGROUND)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 window_opened = False

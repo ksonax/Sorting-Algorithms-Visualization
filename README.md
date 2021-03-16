@@ -12,6 +12,7 @@ Application visualises 6 basic sorting algorithms.
 • Merge Sort
 • Quick Sort
 • Heap Sort
+
 It also allows to randomize the array after every sort, and close it at any time.
 # The main view of application
 
